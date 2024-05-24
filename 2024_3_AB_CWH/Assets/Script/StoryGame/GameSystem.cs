@@ -4,59 +4,88 @@ using UnityEngine;
 using UnityEditor;
 using System.Text;
 
-namespace STORYGAME
+#if UNITY_EDITOR
+[CustomEditor(typeof(GameSystem))]
+public class GameSystemEdiot : Editor
 {
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+        GameSystem gameSystem = (GameSystem)target;
+
+        if(GUILayout.Button("Rest Stroy Modes"))
+        {
+            gameSystem.ResetStoryModels();
+        }
+    }
+}
+#endif
+
+public class GameSystem : MonoBehaviour
+{
+    public static GameSystem instance;
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
+    public enum GAMESTATE
+    {
+        STROYSHOW,
+        WAITSELECT,
+        STORYEND
+    }
+
+    public Stats stats;
+    public GAMESTATE currentState;
+    public int currentStoryIndex = 1;
+    public StoryModel[] storyModels;
+
+
 
 #if UNITY_EDITOR
-    [CustomEditor(typeof(GameSystem))]
-    public class GameSysteEditor : Editor
+    [ContextMenu("Reset Story Models")]
+
+    public void ResetStoryModels()
     {
-        public override void OnInspectorGUI()
+        storyModels = Resources.LoadAll<StoryModel>("");
+    }
+#endif
+    public void StoryShow(int number)
+    {
+        StoryModel tempStoryModels = FindStoryModel(number);
+    }
+    StoryModel FindStoryModel(int number)
+    {
+        StoryModel tempStoryModels = null;
+        for (int i = 0; i < storyModels.Length; i++)
         {
-            base.OnInspectorGUI();
-
-            GameSystem gameSystem = (GameSystem)target;
-            //Reset Story Models 버튼 생성
-
-            if(GUILayout.Button("Reset Story Modes"))
+            if (storyModels[i] .storyNumber == number)
             {
-                gameSystem.ResetStroyModles();
+                tempStoryModels = storyModels[i];
+                break;
             }
         }
+        return tempStoryModels;
     }
 
-#endif
-
-    public class GameSystem : MonoBehaviour
+    StoryModel RandomStory()
     {
-        public static GameSystem instance;
+        StoryModel tempStoryModels = null;
 
-        private void Awake()
+        List<StoryModel> storyModelList = new List<StoryModel>();
+
+        for(int i = 0; i < storyModels.Length; i++)
         {
-            instance = this;
+            if(storyModels [i].storyType == StoryModel.STORYTYPE.MAIN)
+            {
+                storyModelList.Add(storyModels[i]);
+            }
         }
 
-        public enum GAMESTATE
-        {
-            STORYSHOW,
-            WAITSELECT,
-            STORYEND,
-            BATTLEMODE,
-            BATTLEDONE,
-            SHOPMODE,
-            ENDMODE,
-        }
-
-        public GAMESTATE currentState;
-        public StroyTableObject[] storyModels;
-        public int currentStoryInex = 1;
-
-#if UNITY_EDITOR
-        [ContextMenu("Reset Story Models")]
-        public void ResetStroyModles()
-        {
-            storyModels = Resources.LoadAll<StroyTableObject>("");
-        }
-#endif
-    }
+        tempStoryModels = storyModelList[Random.Range(0, storyModelList.Count)];
+        currentStoryIndex = tempStoryModels.storyNumber;
+        return tempStoryModels;
+    }    
 }

@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace STORYGAME
-{
+
     public class Enums
     {
         public enum StoryType
@@ -16,24 +15,16 @@ namespace STORYGAME
         public enum EvenType
         {
             NONE,
-            GoToBattle = 100,
+            GOTOBATTLE = 100,
             CheckSTR = 1000,
-            CheckDEX,
-            CheckCON,
-            CheckINT,
-            CheckWIS,
-            CheckCHA
         }
 
         public enum ResultType
         {
-            ChangeHP,
-            ChangeSp,
+
             AddExperience,
-            GoToShop,
             GoToNextStory,
-            GoToRandomStory,
-            GoToEnding
+            GoToRandomStory
         }
     }
 
@@ -54,4 +45,3 @@ namespace STORYGAME
         public int wisdom;          //WIS
         public int charisma;        //CHA
     }
-}
